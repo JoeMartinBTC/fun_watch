@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
-# Zeigerreiter — Release-Build, Selbsttest, .app-Bundle, Installation nach /Applications, Start.
+# Fun Watch (Programm Zeigerreiter) — Release-Build, Selbsttest, .app-Bundle, Installation nach /Applications, Start.
 # Aufruf: bash Scripts/build_local_app.sh
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-APP_NAME="Zeigerreiter"
-BUNDLE_ID="com.joemartinbtc.Zeigerreiter"
+APP_NAME="Zeigerreiter"          # Programm im Bundle
+APP_TITLE="Fun Watch"            # Name im Programme-Ordner, im Dock und im Finder
+BUNDLE_ID="com.joemartinbtc.Zeigerreiter"   # bleibt: Einstellungen hängen daran
 VERSION="1.0.0"
 BUILD_DIR="build"
-APP_OUT="$BUILD_DIR/$APP_NAME.app"
+APP_OUT="$BUILD_DIR/$APP_TITLE.app"
 CONTENTS="$APP_OUT/Contents"
 
 echo "── 1/5  Release-Build"
@@ -30,8 +31,8 @@ cat > "$CONTENTS/Info.plist" << EOF
 <plist version="1.0">
 <dict>
     <key>CFBundleIdentifier</key><string>${BUNDLE_ID}</string>
-    <key>CFBundleName</key><string>${APP_NAME}</string>
-    <key>CFBundleDisplayName</key><string>Zeigerreiter</string>
+    <key>CFBundleName</key><string>${APP_TITLE}</string>
+    <key>CFBundleDisplayName</key><string>${APP_TITLE}</string>
     <key>CFBundleIconFile</key><string>AppIcon</string>
     <key>CFBundleExecutable</key><string>${APP_NAME}</string>
     <key>CFBundleVersion</key><string>${VERSION}</string>
@@ -50,8 +51,10 @@ echo "── 4/5  Ad-hoc-Signatur"
 codesign --force --sign - --timestamp=none "$APP_OUT"
 
 echo "── 5/5  Installation"
-pkill -f "/Applications/$APP_NAME.app" 2>/dev/null || true
-rsync -a --delete "$APP_OUT/" "/Applications/$APP_NAME.app/"
-codesign --force --sign - --timestamp=none "/Applications/$APP_NAME.app"
-open "/Applications/$APP_NAME.app"
-echo "✓ /Applications/$APP_NAME.app läuft"
+pkill -f "/Applications/.*\.app/Contents/MacOS/$APP_NAME" 2>/dev/null || true
+# Alter Bundle-Name bis 2026-11-11; wird durch "$APP_TITLE.app" ersetzt.
+[[ -d "/Applications/$APP_NAME.app" ]] && rm -rf "/Applications/$APP_NAME.app"
+rsync -a --delete "$APP_OUT/" "/Applications/$APP_TITLE.app/"
+codesign --force --sign - --timestamp=none "/Applications/$APP_TITLE.app"
+open "/Applications/$APP_TITLE.app"
+echo "✓ /Applications/$APP_TITLE.app läuft"

@@ -133,7 +133,10 @@ bash Scripts/build_local_app.sh
 Das Skript arbeitet in fünf Schritten: Release-Build, Selbsttest, App-Bundle, Ad-hoc-Signatur, Installation nach `/Applications` mit Start.
 Die App ist nicht notarisiert. Sie läuft auf dem Mac, auf dem sie gebaut wurde; eine weitergegebene Kopie blockiert Gatekeeper.
 
-Entfernen: App beenden, `/Applications/Zeigerreiter.app` löschen, auf Wunsch `defaults delete com.joemartinbtc.Zeigerreiter`.
+Die App heißt im Programme-Ordner und im Dock „Fun Watch“; das Programm darin heißt weiter `Zeigerreiter`, die Bundle-ID bleibt `com.joemartinbtc.Zeigerreiter`.
+Ein älteres `/Applications/Zeigerreiter.app` ersetzt das Skript automatisch; die Einstellungen bleiben erhalten.
+
+Entfernen: App beenden, `/Applications/Fun Watch.app` löschen, auf Wunsch `defaults delete com.joemartinbtc.Zeigerreiter`.
 
 ## Prüfbefehle
 
@@ -145,7 +148,7 @@ Zeigerreiter --folge 24     # Spruchnummern je Bewegung für die nächsten 24 St
 Der Selbsttest prüft je Sprache: 72 allgemeine und 72 Bitcoin-Sprüche, genau einen Trenner `|` je Zeile, genau zwei `*` in der unteren Zeile, keine Dubletten, 32 Menüeinträge.
 Dazu prüft er über 800 Tage die Folgen für Sprüche, Farbe, Zifferblatt und Figur: nie dasselbe direkt nacheinander, jeder Eintrag gleich oft.
 
-Nach der Installation liegt der Befehl unter `/Applications/Zeigerreiter.app/Contents/MacOS/Zeigerreiter`.
+Nach der Installation liegt der Befehl unter `"/Applications/Fun Watch.app/Contents/MacOS/Zeigerreiter"`.
 
 ## Standbilder und Film
 
