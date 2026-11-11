@@ -118,7 +118,9 @@ Oberster Menüpunkt („₿ Bitcoin-Modus“). Das Blatt folgt der [Bitcoin-Uhr]
   - Beim Anmelden starten
   - Beenden
 
-Die App hat kein Dock-Symbol und keinen Eintrag in der Menüleiste.
+Während sie läuft, zeigt die App keinen Punkt im Dock und keinen Eintrag in der Menüleiste.
+Zum Starten legt man „Fun Watch“ einmal ins Dock (aus dem Programme-Ordner ziehen) oder startet sie dort per Doppelklick.
+Beenden geht über Rechtsklick auf die Uhr.
 
 ## Installieren
 
@@ -130,7 +132,8 @@ cd fun_watch
 bash Scripts/build_local_app.sh
 ```
 
-Das Skript arbeitet in fünf Schritten: Release-Build, Selbsttest, App-Bundle, Ad-hoc-Signatur, Installation nach `/Applications` mit Start.
+Das Skript arbeitet in fünf Schritten: Release-Build, Selbsttest, App-Bundle mit Symbol, Ad-hoc-Signatur, Installation nach `/Applications` mit Start.
+Das Symbol (Uhr in Salbei, Strichmännchen auf dem Minutenzeiger) zeichnet `Scripts/generate_icon.swift` bei jedem Bau neu.
 Die App ist nicht notarisiert. Sie läuft auf dem Mac, auf dem sie gebaut wurde; eine weitergegebene Kopie blockiert Gatekeeper.
 
 Die App heißt im Programme-Ordner und im Dock „Fun Watch“; das Programm darin heißt weiter `Zeigerreiter`, die Bundle-ID bleibt `com.joemartinbtc.Zeigerreiter`.
@@ -190,12 +193,14 @@ Alle Bilder und Videos in `docs/` sind so entstanden.
 | `SpruecheBitcoin*.swift` | Bitcoin-Sprüche, je Sprache 72 Zeilen |
 | `Menue.swift`, `MenueTexteWelt.swift` | Menütexte in zwölf Sprachen |
 | `BitcoinDaten.swift` | Abfrage bei mempool.space, nur im Bitcoin-Modus |
-| `Scripts/build_local_app.sh` | bauen, prüfen, bündeln, signieren, installieren |
+| `Scripts/build_local_app.sh` | bauen, prüfen, bündeln, signieren, installieren als `Fun Watch.app` |
+| `Scripts/generate_icon.swift` | zeichnet das App-Symbol (`AppIcon.icns`, alle Größen von 16 bis 1024 px) |
 | `docs/` | Bilder, Videos und GIF dieser README |
 
 ## Technik
 
-- **Fenster:** randlos und durchsichtig, auf Schreibtisch-Ebene oder über allen Fenstern. `LSUIElement`, also ohne Dock-Symbol.
+- **Fenster:** randlos und durchsichtig, auf Schreibtisch-Ebene oder über allen Fenstern. `LSUIElement`, also ohne Dock-Punkt während des Laufs.
+- **Name:** sichtbar „Fun Watch“ (Bundle-Ordner, `CFBundleName`, `CFBundleDisplayName`). Programm, Paketprodukt und Bundle-ID heißen `Zeigerreiter`, damit Einstellungen über die Umbenennung hinweg erhalten bleiben.
 - **Zeichnen:** Core-Animation-Ebenen in einer layer-hosting `NSView`. Die Figur besteht aus `CAShapeLayer`-Pfaden; zwischen zwei Haltungen animiert Core Animation den Pfad. Jede Gestalt hat deshalb eine feste Pfadstruktur.
 - **Zufall ohne Wiederholung:** `Zufallsfolge` mischt je Block per Fisher-Yates mit SplitMix64, die Saat kommt aus Blocknummer und Salz. Beginnt ein Block mit dem letzten Eintrag des Blocks davor, tauschen Platz 0 und 1.
 - **Last:** Die App stellt die Uhr alle zehn Sekunden; dazwischen arbeitet nur Core Animation. Gemessen rund 0,2 % CPU.
