@@ -66,6 +66,8 @@ bash Scripts/build_local_app.sh                      # baut, prüft, installiert
 Zeigerreiter --selbsttest                            # Ausgabe: ok
 Zeigerreiter --folge 24                              # Spruchnummern der nächsten 24 Stunden
 Zeigerreiter --bogen bogen.png 10:05:0 10:12:1       # Standbilder ohne Bildschirmaufnahme (Stunde:Minute:Haltung)
+Zeigerreiter --film bilder/ salbei:schlicht:mensch:de  # Vorführung als 1200 PNG-Bilder (40 s, 30 Bilder/s)
+ffmpeg -framerate 30 -i bilder/%04d.png -c:v libx264 -crf 28 -preset slow -pix_fmt yuv420p -movflags +faststart -an film.mp4
 ```
 
 ## Aufbau

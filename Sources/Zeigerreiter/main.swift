@@ -65,6 +65,43 @@ if let i = args.firstIndex(of: "--bogen"), i + 2 < args.count {
     exit(0)
 }
 
+// `Zeigerreiter --film <ordner> [farbe:blatt:figur:sprache[:k|btc]]` malt die Vorführung
+// (eine Stunde in 40 Sekunden) als PNG-Bilder mit 30 Bildern je Sekunde, ohne Bildschirmaufnahme.
+// Dieselbe Rechnung wie `vorfuehrSchritt()`; Spruchfolge fest, damit der Film wiederholbar ist.
+if let i = args.firstIndex(of: "--film"), i + 1 < args.count {
+    let ordner = URL(fileURLWithPath: args[i + 1])
+    let t = (i + 2 < args.count ? args[i + 2] : "").split(separator: ":", omittingEmptySubsequences: false).map(String.init)
+    func teil(_ k: Int) -> String { k < t.count ? t[k] : "" }
+    try? FileManager.default.createDirectory(at: ordner, withIntermediateDirectories: true)
+    MainActor.assumeIsolated {
+        var a = Aussehen()
+        a.farbe = Farbwelt(rawValue: teil(0)) ?? .salbei
+        a.blatt = Blattart(rawValue: teil(1)) ?? .schlicht
+        a.gestalt = Gestalt(rawValue: teil(2)) ?? .mensch
+        a.sprache = Sprache(rawValue: teil(3)) ?? .de
+        a.komplikationen = teil(4) == "k"
+        a.bitcoin = teil(4) == "btc"
+        let breite: CGFloat = 400
+        let uhr = UhrView(frame: NSRect(x: 0, y: 0, width: breite, height: breite * UhrView.seitenverhaeltnis))
+        uhr.aussehen = a.fuerStunde(0)
+        if a.bitcoin { uhr.bitcoinWerte = BitcoinWerte(block: "921.000", gebuehren: "3 · 2 · 1", kurs: "$ 100.000") }
+        let bilder = 40 * 30
+        let datum = Date(timeIntervalSince1970: 1_794_391_200)   // fester Tag für Datum und Mond
+        for n in 0..<bilder {
+            let vergangen = Double(n) / 30
+            let minute = vergangen / 40 * 60
+            let bewegung = Bewegung.bei(minute: minute)
+            let blend = CGFloat(0.5 - 0.5 * cos(.pi * vergangen / bewegung.takt))
+            uhr.stelle(datum: datum, stunde: 10, minute: minute, stundenNummer: 498_442, blend: blend)
+            guard let bild = uhr.bild(skala: 2) else { continue }
+            let rep = NSBitmapImageRep(cgImage: bild)
+            let ziel = ordner.appendingPathComponent(String(format: "%04d.png", n))
+            try! rep.representation(using: .png, properties: [:])!.write(to: ziel)
+        }
+    }
+    exit(0)
+}
+
 MainActor.assumeIsolated {
     let app = NSApplication.shared
     let delegate = AppDelegate()
